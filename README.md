@@ -64,8 +64,33 @@
 本服务包含一个自启动脚本，会自动处理依赖安装。
 
 **对于 Claude Desktop / Cursor 用户：**
-找到你的 MCP 配置文件（通常位于 `~/Library/Application Support/Claude/claude_desktop_config.json` 或项目特定的 `mcp_config.json`），添加以下配置：
+找到你的 MCP 配置文件（通常位于 `~/Library/Application Support/Claude/claude_desktop_config.json` 或项目特定的 `mcp_config.json`）。
 
+### 3. 配置 MCP 客户端
+
+**方式一：使用 Python 直接启动 (推荐)**
+此方式需要先手动安装依赖：
+```bash
+pip install mcp pillow
+```
+
+然后添加配置：
+```json
+{
+  "mcpServers": {
+    "android_control": {
+      "command": "/opt/homebrew/bin/python3",
+      "args": [
+        "/你的项目路径/control_android_mcp/mcp/server.py"
+      ]
+    }
+  }
+}
+```
+> **提示**：建议使用绝对路径。请确认你的 Python 路径正确 (需包含 mcp 库)。
+
+**方式二：使用启动脚本 (自动管理依赖)**
+如果遇到环境问题，也可使用我们提供的脚本：
 ```json
 {
   "mcpServers": {
@@ -76,9 +101,8 @@
   }
 }
 ```
-> ⚠️ **注意**：请务必然将 `/你的项目路径/...` 替换为 `start_server.sh` 脚本在您电脑上的**绝对路径**。
 
-### 第三步：开始使用
+### 4. 开始使用
 配置生效后，重启 AI 客户端。你现在可以直接用自然语言控制手机了：
 
 *   **"帮我截个图看看现在屏幕上显示什么。"** -> AI 会调用 `get_screenshot`
@@ -91,7 +115,9 @@
 ## 🛠️ 常见问题
 
 **Q: 报错 "externally-managed-environment" 怎么办？**
-A: 我们的启动脚本 `start_server.sh` 已经内置了修复方案（使用 `--break-system-packages`），请确保配置的是该脚本的路径，而不是直接运行 python。
+A: 这是 Python 环境管理限制。解决方法：
+1. 使用我们的 `start_server.sh` 脚本（它包含 `--break-system-packages` 参数）。
+2. 或者手动安装时加上该参数：`pip install mcp --break-system-packages`。
 
 **Q: 如何使用 Root 权限？**
 A: 只要你的手机已经 Root（安装了 Magisk 等），在让 AI 执行敏感操作时（如修改系统文件），只需告诉它“使用 Root 权限”或者 AI 判断需要 Root 时，它会自动设置 `as_root=True` 参数。
